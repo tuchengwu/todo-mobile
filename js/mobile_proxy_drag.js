@@ -216,6 +216,15 @@ window.onload=function () {
 		}
 		//添加操作
 		else{
+			if(event.ctrlKey){
+				items=new Proxy(items.filter(item=> item.name.indexOf(currentMsg) === -1),arrayChangeHandler);
+				currentMsg='';
+				$(".new-todo").value=currentMsg;
+				saveItems(items);
+				saveMsg(currentMsg);
+				flush();
+				return;
+			}
 			if(currentMsg==''){
 				console.log("添加的todo名为空");
 			}
