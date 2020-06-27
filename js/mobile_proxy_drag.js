@@ -93,6 +93,7 @@ function drawItems(){
 				'<div class="view" draggable="true">',
 				'  <input class="toggle" type="checkbox">',
 				'  <label class="todo-label">' + item.name + '</label>',
+				'  <button class="editbutton"></button>',
 				'  <button class="duplicate"></button>',
 				'  <button class="destroy"></button>',
 				'</div>'
@@ -128,14 +129,12 @@ function drawItems(){
 				}
 			});
 			itemLi.querySelector(".view").addEventListener("touchmove",function (ev) {
-				ev.preventDefault();
+
 			});
 			itemLi.querySelector(".view").addEventListener("touchstart",function (ev) {
 				//保存滑动开始的元素与y坐标
 				dragIndex=index;
 				beginy = ev.touches[0].pageY;
-
-
 			});
 			//编辑功能
 			var label = itemLi.querySelector('.todo-label');
@@ -173,6 +172,39 @@ function drawItems(){
 				itemLi.appendChild(edit);
 				edit.focus();
 			}, false);
+			itemLi.querySelector(".editbutton").addEventListener("click",function () {
+				itemLi.classList.add("editing");
+			var edit = document.createElement('input');
+			var finished = false;
+			edit.setAttribute('type', 'text');
+			edit.setAttribute('class', 'edit');
+			edit.setAttribute('value', label.innerHTML);
+
+			function finish() {
+				if (finished) return;
+				finished = true;
+				itemLi.removeChild(edit);
+				itemLi.classList.remove("editing");
+			}
+
+			edit.addEventListener('blur', function() {
+				finish();
+			}, false);
+
+			edit.addEventListener('keyup', function(ev) {
+				//esc键退出编辑状态
+				if (ev.keyCode == 27) {
+					finish();
+				}
+				//Enter键应用编辑内容
+				else if (ev.keyCode == 13) {
+					label.innerHTML = this.value;
+					items.splice(index,1,{name:this.value,completed:item.completed});
+				}
+			}, false);
+			itemLi.appendChild(edit);
+			edit.focus();
+		}, false);
 			//切换功能
 			var itemToggle = itemLi.querySelector('.toggle');
 			//将是否选中与item的状态绑定
